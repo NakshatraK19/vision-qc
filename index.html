@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VisionQC — Automated Optical Inspection & Sub-Pixel Metrology</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --panel: #131a26;
+      --panel-border: #222d42;
+      --text: #e6edf7;
+      --muted: #8b9bb4;
+      --accent: #38bdf8;
+      --pass: #22c55e;
+      --fail: #ef4444;
+      --warn: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      border-bottom: 1px solid var(--panel-border);
+      background: #0e1420;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .card h2 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .control-group {
+      margin-bottom: 14px;
+    }
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.84rem;
+      margin-bottom: 4px;
+    }
+    .control-label span.val {
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 600;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .mode-tabs, .view-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #0e1420;
+      color: var(--muted);
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: #06101e;
+      font-weight: 700;
+      font-size: 0.88rem;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-secondary {
+      padding: 7px 13px;
+      background: #1a2436;
+      color: var(--text);
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 780px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 9px;
+      padding: 12px 15px;
+    }
+    .kpi .k-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .kpi .k-val {
+      font-size: 1.45rem;
+      font-weight: 700;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      margin-top: 2px;
+    }
+    .k-pass { color: var(--pass); }
+    .k-fail { color: var(--fail); }
+    .viewer-box {
+      position: relative;
+      background: #070a10;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .viewer-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 780px) {
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+    .spinner-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(11, 15, 23, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+    .spinner-overlay.active { display: flex; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+    th, td {
+      padding: 9px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--panel-border);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      background: #0e1420;
+      font-family: inherit;
+    }
+    .status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.74rem;
+    }
+    .status-PASS { background: rgba(34, 197, 94, 0.16); color: var(--pass); }
+    .status-FAIL { background: rgba(239, 68, 68, 0.18); color: var(--fail); }
+    .status-UNKNOWN, .status-PARTIAL { background: rgba(245, 158, 11, 0.18); color: var(--warn); }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    video {
+      width: 100%;
+      border-radius: 6px;
+      background: #000;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="brand-title">
+        VisionQC
+        <span class="badge-pill">OpenCV Sub-Pixel Metrology</span>
+      </div>
+      <div class="subtitle">
+        ArUco Homography Calibration • Kåsa Circle &amp; Huber Line Fitting • Convexity-Defect Chip Detection
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="btn-secondary" id="downloadCsvBtn">Download CSV Report</button>
+      <a href="https://github.com/nakshatrak19" target="_blank" class="btn-secondary" style="text-decoration:none;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Left Sidebar Controls -->
+    <aside class="card">
+      <h2>1. Scene Source</h2>
+      <div class="mode-tabs">
+        <button class="tab-btn active" data-mode="synth">Synthetic Belt</button>
+        <button class="tab-btn" data-mode="upload">Upload</button>
+        <button class="tab-btn" data-mode="webcam">Webcam</button>
+      </div>
+
+      <!-- Synthetic Controls -->
+      <div id="synthControls">
+        <div class="control-group">
+          <div class="control-label"><span>Random Seed</span><span class="val" id="val-seed">3</span></div>
+          <input type="range" id="inp-seed" min="0" max="100" step="1" value="3" />
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>Parts on Belt</span><span class="val" id="val-n_parts">7</span></div>
+          <input type="range" id="inp-n_parts" min="1" max="10" step="1" value="7" />
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>Defect Probability</span><span class="val" id="val-defect_rate">0.45</span></div>
+          <input type="range" id="inp-defect_rate" min="0" max="1" step="0.05" value="0.45" />
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>Camera Tilt (Perspective)</span><span class="val" id="val-tilt">0.03</span></div>
+          <input type="range" id="inp-tilt" min="0" max="0.09" step="0.01" value="0.03" />
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>Sensor Noise (σ)</span><span class="val" id="val-noise">4.0</span></div>
+          <input type="range" id="inp-noise" min="0" max="10" step="0.5" value="4.0" />
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>Lighting Gradient</span><span class="val" id="val-lighting">0.25</span></div>
+          <input type="range" id="inp-lighting" min="0" max="0.5" step="0.05" value="0.25" />
+        </div>
+        <button class="btn-secondary" id="randomSeedBtn" style="width:100%; margin-bottom:14px;">
+          Randomize Conveyor Scene
+        </button>
+      </div>
+
+      <!-- Upload Controls -->
+      <div id="uploadControls" style="display:none; margin-bottom:14px;">
+        <p style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">
+          Upload a top-down image containing parts and a 30 mm ArUco (DICT_4X4_50) marker.
+        </p>
+        <input type="file" id="fileInput" accept="image/*" style="font-size:0.8rem; width:100%;" />
+      </div>
+
+      <!-- Webcam Controls -->
+      <div id="webcamControls" style="display:none; margin-bottom:14px;">
+        <video id="webcamVideo" autoplay playsinline muted></video>
+        <button class="btn-secondary" id="snapWebcamBtn" style="width:100%;">Capture &amp; Inspect Frame</button>
+      </div>
+
+      <h2 style="margin-top:10px;">2. Metrology &amp; Tolerances</h2>
+      <label class="checkbox-row">
+        <input type="checkbox" id="inp-rectify" checked />
+        <span>ArUco Homography Rectification</span>
+      </label>
+
+      <div class="control-group">
+        <div class="control-label"><span>Max Edge Chip (mm)</span><span class="val" id="val-max_chip">0.8</span></div>
+        <input type="range" id="inp-max_chip" min="0.3" max="2.5" step="0.1" value="0.8" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-label"><span>Tolerance Multiplier</span><span class="val" id="val-tol_scale">1.0x</span></div>
+        <input type="range" id="inp-tol_scale" min="0.5" max="2.0" step="0.1" value="1.0" />
+      </div>
+
+      <button class="btn-primary" id="runBtn">Run Optical Inspection</button>
+    </aside>
+
+    <!-- Main Inspection Area -->
+    <section>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="k-label">Parts Detected</div>
+          <div class="k-val" id="kpi-total">-</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">PASS (In Spec)</div>
+          <div class="k-val k-pass" id="kpi-pass">-</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">FAIL (Rejected)</div>
+          <div class="k-val k-fail" id="kpi-fail">-</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Scale Calibration</div>
+          <div class="k-val" id="kpi-scale" style="font-size:1.15rem;">-</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Pipeline Latency</div>
+          <div class="k-val" id="kpi-latency" style="font-size:1.15rem;">-</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="view-tabs">
+          <button class="tab-btn active" data-view="annotated">Annotated Inspection Overlay</button>
+          <button class="tab-btn" data-view="compare">Raw Camera vs. Rectified Plane</button>
+          <button class="tab-btn" data-view="binary">Otsu + Morphological Mask</button>
+        </div>
+
+        <div class="viewer-box" id="singleViewer">
+          <img id="mainImage" alt="Inspection Output" />
+          <div class="spinner-overlay" id="spinner">Running OpenCV Metrology Pipeline...</div>
+        </div>
+
+        <div class="compare-grid" id="compareViewer" style="display:none;">
+          <div class="viewer-box"><img id="rawImage" alt="Raw Camera Frame" /></div>
+          <div class="viewer-box"><img id="rectImage" alt="Rectified & Annotated" /></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Per-Part Dimensional Metrology &amp; Defect Log</h2>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Catalogue SKU</th>
+                <th>Status</th>
+                <th>Shape</th>
+                <th>Outer Dim (mm)</th>
+                <th>Holes (mm)</th>
+                <th>Max Chip (mm)</th>
+                <th>Defect / Rejection Reason</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let currentMode = "synth";
+    let currentView = "annotated";
+    let lastResult = null;
+    let uploadedB64 = null;
+    let webcamStream = null;
+
+    const sliders = ["seed", "n_parts", "defect_rate", "tilt", "noise", "lighting", "max_chip", "tol_scale"];
+    sliders.forEach((id) => {
+      const el = document.getElementById("inp-" + id);
+      const label = document.getElementById("val-" + id);
+      el.addEventListener("input", () => {
+        label.textContent = id === "tol_scale" ? el.value + "x" : el.value;
+      });
+      el.addEventListener("change", () => {
+        if (currentMode === "synth" || id === "max_chip" || id === "tol_scale") runInspection();
+      });
+    });
+
+    document.getElementById("inp-rectify").addEventListener("change", runInspection);
+
+    document.getElementById("randomSeedBtn").addEventListener("click", () => {
+      const next = Math.floor(Math.random() * 100);
+      document.getElementById("inp-seed").value = next;
+      document.getElementById("val-seed").textContent = next;
+      runInspection();
+    });
+
+    // Mode tabs
+    document.querySelectorAll("[data-mode]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        document.querySelectorAll("[data-mode]").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentMode = btn.dataset.mode;
+        document.getElementById("synthControls").style.display = currentMode === "synth" ? "block" : "none";
+        document.getElementById("uploadControls").style.display = currentMode === "upload" ? "block" : "none";
+        document.getElementById("webcamControls").style.display = currentMode === "webcam" ? "block" : "none";
+
+        if (currentMode === "webcam") {
+          try {
+            webcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+            document.getElementById("webcamVideo").srcObject = webcamStream;
+          } catch (err) {
+            alert("Could not access webcam: " + err.message);
+          }
+        } else if (webcamStream) {
+          webcamStream.getTracks().forEach((t) => t.stop());
+          webcamStream = null;
+        }
+      });
+    });
+
+    // View tabs
+    document.querySelectorAll("[data-view]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-view]").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentView = btn.dataset.view;
+        renderView();
+      });
+    });
+
+    // File upload
+    document.getElementById("fileInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        uploadedB64 = reader.result;
+        runInspection();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Webcam snapshot
+    document.getElementById("snapWebcamBtn").addEventListener("click", () => {
+      const video = document.getElementById("webcamVideo");
+      if (!video.videoWidth) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      uploadedB64 = canvas.toDataURL("image/jpeg", 0.9);
+      runInspection();
+    });
+
+    document.getElementById("runBtn").addEventListener("click", runInspection);
+
+    async function runInspection() {
+      const spinner = document.getElementById("spinner");
+      spinner.classList.add("active");
+
+      const payload = {
+        mode: currentMode === "synth" ? "synth" : "image",
+        seed: Number(document.getElementById("inp-seed").value),
+        n_parts: Number(document.getElementById("inp-n_parts").value),
+        defect_rate: Number(document.getElementById("inp-defect_rate").value),
+        tilt: Number(document.getElementById("inp-tilt").value),
+        noise: Number(document.getElementById("inp-noise").value),
+        lighting: Number(document.getElementById("inp-lighting").value),
+        rectify: document.getElementById("inp-rectify").checked,
+        max_chip_depth_mm: Number(document.getElementById("inp-max_chip").value),
+        tol_scale: Number(document.getElementById("inp-tol_scale").value),
+      };
+
+      if (payload.mode === "image") {
+        if (!uploadedB64) {
+          spinner.classList.remove("active");
+          return;
+        }
+        payload.image_b64 = uploadedB64;
+      }
+
+      try {
+        const res = await fetch("/api/inspect", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        lastResult = data;
+        updateDashboard(data);
+      } catch (err) {
+        alert("Inspection error: " + err.message);
+      } finally {
+        spinner.classList.remove("active");
+      }
+    }
+
+    function renderView() {
+      if (!lastResult) return;
+      const single = document.getElementById("singleViewer");
+      const compare = document.getElementById("compareViewer");
+      if (currentView === "compare") {
+        single.style.display = "none";
+        compare.style.display = "grid";
+        document.getElementById("rawImage").src = lastResult.images.raw;
+        document.getElementById("rectImage").src = lastResult.images.annotated;
+      } else {
+        single.style.display = "flex";
+        compare.style.display = "none";
+        document.getElementById("mainImage").src =
+          currentView === "binary" ? lastResult.images.binary : lastResult.images.annotated;
+      }
+    }
+
+    function updateDashboard(data) {
+      document.getElementById("kpi-total").textContent = data.total_parts;
+      document.getElementById("kpi-pass").textContent = data.counts.PASS || 0;
+      document.getElementById("kpi-fail").textContent = data.counts.FAIL || 0;
+      document.getElementById("kpi-scale").textContent = data.calibration.is_metric
+        ? `${data.calibration.px_per_mm} px/mm`
+        : "Uncalibrated";
+      document.getElementById("kpi-latency").textContent = `${data.elapsed_ms} ms (${data.fps} FPS)`;
+
+      renderView();
+
+      const tbody = document.getElementById("reportTableBody");
+      tbody.innerHTML = "";
+      data.rows.forEach((r) => {
+        const dim =
+          r.shape === "circle"
+            ? `⌀ ${r.diameter_mm?.toFixed(2) ?? "-"}`
+            : `${r.length_mm?.toFixed(2) ?? "-"} × ${r.width_mm?.toFixed(2) ?? "-"}`;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>#${r.id}</td>
+          <td>${r.part_type}</td>
+          <td><span class="status-pill status-${r.status}">${r.status}</span></td>
+          <td>${r.shape || "-"}</td>
+          <td>${dim}</td>
+          <td>${r.hole_dia_mm || "0"}</td>
+          <td>${r.chip_depth_mm?.toFixed(2) ?? "-"}</td>
+          <td style="color:${r.defects ? "#fca5a5" : "#86efac"}">${r.defects || "Within spec"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("downloadCsvBtn").addEventListener("click", () => {
+      if (!lastResult || !lastResult.rows.length) return;
+      const cols = Object.keys(lastResult.rows[0]);
+      const lines = [cols.join(",")];
+      lastResult.rows.forEach((row) => {
+        lines.push(cols.map((c) => `"${String(row[c] ?? "").replace(/"/g, '""')}"`).join(","));
+      });
+      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "visionqc_inspection_report.csv";
+      a.click();
+    });
+
+    // Run initial inspection on load
+    runInspection();
+  </script>
+</body>
+</html>

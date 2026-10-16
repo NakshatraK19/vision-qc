@@ -59,10 +59,10 @@ python -m visionqc inspect samples --out results
 # 4. Run quantitative accuracy & latency benchmark
 python -m visionqc benchmark --scenes 40 --tilt 0.08
 
-# 5. Launch the interactive Streamlit web dashboard
-streamlit run app.py
+# 5. Deploy the interactive web dashboard & API on Vercel
+#    Import this GitHub repo at vercel.com/new (zero-config: serves index.html + /api/inspect)
 
-# 6. Run live webcam inspection (print marker.png first via `python -m visionqc marker`)
+# 6. Run live webcam inspection locally (print marker.png first via `python -m visionqc marker`)
 python -m visionqc live --camera 0
 ```
 

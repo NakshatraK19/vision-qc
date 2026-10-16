@@ -1,0 +1,108 @@
+[
+  {
+    "kind": "spacer_disc",
+    "cx_mm": 70.62469043794974,
+    "cy_mm": 103.93509331187808,
+    "angle_deg": 16.943155603271855,
+    "defect": null,
+    "expected_status": "PASS",
+    "center_px": [
+      353.1234521897487,
+      519.6754665593904
+    ],
+    "hole_count": 0,
+    "hole_diameter_mm": null,
+    "diameter_mm": 25.0
+  },
+  {
+    "kind": "washer_m16",
+    "cx_mm": 114.42476886800418,
+    "cy_mm": 70.0936681308159,
+    "angle_deg": 20.460963585852614,
+    "defect": "undersize",
+    "expected_status": "FAIL",
+    "center_px": [
+      572.1238443400209,
+      350.4683406540795
+    ],
+    "hole_count": 1,
+    "hole_diameter_mm": 17.0,
+    "diameter_mm": 38.4
+  },
+  {
+    "kind": "bracket_plate",
+    "cx_mm": 208.26560499354989,
+    "cy_mm": 58.20657847078313,
+    "angle_deg": 125.31887940062798,
+    "defect": null,
+    "expected_status": "PASS",
+    "center_px": [
+      1041.3280249677493,
+      291.03289235391566
+    ],
+    "hole_count": 2,
+    "hole_diameter_mm": 8.0,
+    "length_mm": 60.0,
+    "width_mm": 30.0
+  },
+  {
+    "kind": "spacer_disc",
+    "cx_mm": 19.324838204926284,
+    "cy_mm": 122.18678912523976,
+    "angle_deg": 56.51748036618062,
+    "defect": "chip",
+    "expected_status": "FAIL",
+    "center_px": [
+      96.62419102463141,
+      610.9339456261988
+    ],
+    "hole_count": 0,
+    "hole_diameter_mm": null,
+    "diameter_mm": 25.0
+  },
+  {
+    "kind": "spacer_disc",
+    "cx_mm": 162.98901469928106,
+    "cy_mm": 117.73516860258358,
+    "angle_deg": 53.669356318336455,
+    "defect": "oversize",
+    "expected_status": "FAIL",
+    "center_px": [
+      814.9450734964053,
+      588.6758430129179
+    ],
+    "hole_count": 0,
+    "hole_diameter_mm": null,
+    "diameter_mm": 26.6
+  },
+  {
+    "kind": "spacer_disc",
+    "cx_mm": 99.50441472858354,
+    "cy_mm": 27.998845849539613,
+    "angle_deg": 38.4960583245865,
+    "defect": "chip",
+    "expected_status": "FAIL",
+    "center_px": [
+      497.5220736429177,
+      139.99422924769806
+    ],
+    "hole_count": 0,
+    "hole_diameter_mm": null,
+    "diameter_mm": 25.0
+  },
+  {
+    "kind": "spacer_disc",
+    "cx_mm": 211.86786618181912,
+    "cy_mm": 124.97912099823101,
+    "angle_deg": 96.71359039691691,
+    "defect": "undersize",
+    "expected_status": "FAIL",
+    "center_px": [
+      1059.3393309090957,
+      624.8956049911551
+    ],
+    "hole_count": 0,
+    "hole_diameter_mm": null,
+    "diameter_mm": 23.4
+  }
+]

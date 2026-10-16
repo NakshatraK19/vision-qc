@@ -1,0 +1,41 @@
+# VisionQC configuration: calibration, segmentation and the part catalogue.
+# All physical quantities are in millimetres.
+
+calibration:
+  marker_mm: 30.0             # printed side length of the ArUco marker (black square only)
+  aruco_dict: DICT_4X4_50
+  rectify: true               # use the marker homography to undo camera tilt (perspective correction)
+  fallback_px_per_mm: null    # used when no marker is visible (e.g. a fixed, pre-calibrated rig)
+
+segmentation:
+  blur_ksize: 5               # Gaussian blur kernel (odd)
+  morph_kernel: 5             # opening/closing kernel to remove speckle and close small gaps
+  polarity: auto              # auto | bright_parts | dark_parts
+  min_part_area_mm2: 60       # anything smaller is treated as noise / debris
+  min_hole_area_mm2: 4
+
+inspection:
+  max_chip_depth_mm: 0.8      # deepest allowed edge dent (convexity defect) before a part is rejected
+  unknown_size_ratio: 0.20    # >20% size mismatch to every catalogue part => UNKNOWN
+
+# Part catalogue. Each detected blob is matched to the closest entry (same shape, nearest size),
+# then checked against its tolerances.
+parts:
+  washer_m16:
+    shape: circle
+    diameter_mm: 40.0
+    tol_mm: 0.5
+    holes: {count: 1, diameter_mm: 17.0, tol_mm: 0.4}
+
+  bracket_plate:
+    shape: rect
+    length_mm: 60.0
+    width_mm: 30.0
+    tol_mm: 0.5
+    holes: {count: 2, diameter_mm: 8.0, tol_mm: 0.4}
+
+  spacer_disc:
+    shape: circle
+    diameter_mm: 25.0
+    tol_mm: 0.5
+    holes: {count: 0}

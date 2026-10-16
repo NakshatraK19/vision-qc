@@ -1,0 +1,29 @@
+image,id,part_type,status,shape,diameter_mm,length_mm,width_mm,holes,hole_dia_mm,chip_depth_mm,center_x_px,center_y_px,defects
+scene_00.png,1,spacer_disc,FAIL,circle,25.07,,,0,,2.655,498.7,138.9,edge chip 2.65 mm deep (max 0.8)
+scene_00.png,2,bracket_plate,PASS,rect,,60.174,30.119,2,8.15;8.20,0.164,1042.2,291.2,
+scene_00.png,3,washer_m16,FAIL,circle,38.538,,,1,17.13,0.182,572.1,350.5,diameter 38.54 mm undersize (spec 40.0+/-0.5)
+scene_00.png,4,spacer_disc,PASS,circle,25.131,,,0,,0.174,352.9,519.6,
+scene_00.png,5,spacer_disc,FAIL,circle,25.192,,,0,,2.623,97.8,611.6,edge chip 2.62 mm deep (max 0.8)
+scene_00.png,6,spacer_disc,FAIL,circle,26.729,,,0,,0.177,815.3,588.9,diameter 26.73 mm oversize (spec 25.0+/-0.5)
+scene_00.png,7,spacer_disc,FAIL,circle,23.586,,,0,,0.174,1060.2,625.3,diameter 23.59 mm undersize (spec 25.0+/-0.5)
+scene_01.png,1,bracket_plate,PASS,rect,,60.178,30.124,2,8.10;8.06,0.185,507.8,271.4,
+scene_01.png,2,washer_m16,PASS,circle,40.172,,,1,17.07,0.174,946.6,211.7,
+scene_01.png,3,spacer_disc,FAIL,circle,23.577,,,0,,0.177,1118.6,403.2,diameter 23.58 mm undersize (spec 25.0+/-0.5)
+scene_01.png,4,spacer_disc,FAIL,circle,23.369,,,0,,0.17,190.8,436.4,diameter 23.37 mm undersize (spec 25.0+/-0.5)
+scene_01.png,5,spacer_disc,FAIL,circle,26.61,,,0,,0.177,473.9,609.8,diameter 26.61 mm oversize (spec 25.0+/-0.5)
+scene_01.png,6,spacer_disc,FAIL,circle,23.466,,,0,,0.164,651.8,611.9,diameter 23.47 mm undersize (spec 25.0+/-0.5)
+scene_01.png,7,spacer_disc,FAIL,circle,26.708,,,0,,0.179,954.4,616.1,diameter 26.71 mm oversize (spec 25.0+/-0.5)
+scene_02.png,1,spacer_disc,PASS,circle,25.036,,,0,,0.17,866.8,95.5,
+scene_02.png,2,washer_m16,FAIL,circle,40.123,,,0,,0.183,547.3,153.0,missing hole: found 0/1
+scene_02.png,3,spacer_disc,PASS,circle,25.074,,,0,,0.181,1174.6,194.4,
+scene_02.png,4,washer_m16,PASS,circle,40.167,,,1,17.13,0.17,370.6,330.5,
+scene_02.png,5,spacer_disc,FAIL,circle,23.539,,,0,,0.174,977.1,368.4,diameter 23.54 mm undersize (spec 25.0+/-0.5)
+scene_02.png,6,washer_m16,FAIL,circle,38.678,,,1,17.07,0.185,588.4,496.5,diameter 38.68 mm undersize (spec 40.0+/-0.5)
+scene_02.png,7,washer_m16,PASS,circle,40.319,,,1,17.12,0.174,1090.1,584.8,
+scene_03.png,1,bracket_plate,PASS,rect,,60.149,30.106,2,8.01;7.97,0.179,946.6,202.3,
+scene_03.png,2,bracket_plate,FAIL,rect,,61.687,31.696,2,8.06;8.06,0.211,501.4,317.5,length 61.69 mm oversize (spec 60.0+/-0.5) | width 31.70 mm oversize (spec 30.0+/-0.5)
+scene_03.png,3,washer_m16,PASS,circle,40.036,,,1,17.11,0.177,137.6,447.0,
+scene_03.png,4,spacer_disc,FAIL,circle,26.606,,,0,,0.177,1176.9,470.3,diameter 26.61 mm oversize (spec 25.0+/-0.5)
+scene_03.png,5,spacer_disc,PASS,circle,24.947,,,0,,0.165,764.4,514.3,
+scene_03.png,6,washer_m16,PASS,circle,39.878,,,1,17.12,0.177,970.1,582.9,
+scene_03.png,7,spacer_disc,FAIL,circle,24.932,,,0,,2.568,398.9,610.1,edge chip 2.57 mm deep (max 0.8)

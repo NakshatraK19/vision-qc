@@ -1,12 +1,9 @@
-"""Vercel Python Serverless Function: /api/inspect
+"""Vercel default Python entrypoint (api/index.py).
 
-Accepts POST JSON with either:
-  - mode = "synth": {seed, n_parts, defect_rate, tilt, noise, lighting, rectify, max_chip_depth_mm, tol_scale}
-  - mode = "image": {image_b64, rectify, max_chip_depth_mm, tol_scale}
-
-Runs the VisionQC OpenCV pipeline and returns:
-  - annotated_b64, raw_b64, binary_b64 (data URLs)
-  - counts, calibration, elapsed_ms, rows, catalogue
+Handles:
+  - GET /             -> serves index.html
+  - GET /api/inspect  -> runs default synthetic inspection (JSON)
+  - POST /api/inspect -> runs inspection on synthetic params or uploaded/webcam image (JSON)
 """
 
 from __future__ import annotations
@@ -29,9 +26,10 @@ from visionqc import Inspector, load_config
 from visionqc.synth import PlacedPart, random_scene, render_scene, tilt
 
 _BASE_CFG = load_config(ROOT / "config" / "parts.yaml")
+_INDEX_HTML = (ROOT / "index.html").read_bytes()
 
 
-def _encode_png(img: np.ndarray, quality: int = 88) -> str:
+def _encode_jpg(img: np.ndarray, quality: int = 88) -> str:
     ok, buf = cv2.imencode(".jpg", img, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
     if not ok:
         raise RuntimeError("Failed to encode image")
@@ -61,11 +59,12 @@ def run_inspection(payload: dict) -> dict:
         image_bgr = cv2.imdecode(img_bytes, cv2.IMREAD_COLOR)
         if image_bgr is None:
             raise ValueError("Could not decode uploaded image")
-        # Cap resolution to 1280px wide for fast serverless execution
         h, w = image_bgr.shape[:2]
         if w > 1280:
             scale = 1280.0 / w
-            image_bgr = cv2.resize(image_bgr, (1280, int(round(h * scale))), interpolation=cv2.INTER_AREA)
+            image_bgr = cv2.resize(
+                image_bgr, (1280, int(round(h * scale))), interpolation=cv2.INTER_AREA
+            )
     else:
         seed = int(payload.get("seed", 3))
         n_parts = max(1, min(12, int(payload.get("n_parts", 7))))
@@ -92,7 +91,6 @@ def run_inspection(payload: dict) -> dict:
     inspector = Inspector(cfg)
     report = inspector.inspect(image_bgr)
     cal = report.calibration
-
     binary_bgr = cv2.cvtColor(report.binary, cv2.COLOR_GRAY2BGR)
 
     return {
@@ -109,9 +107,9 @@ def run_inspection(payload: dict) -> dict:
         "rows": report.rows(),
         "catalogue": cfg["parts"],
         "images": {
-            "annotated": _encode_png(report.annotated),
-            "raw": _encode_png(image_bgr),
-            "binary": _encode_png(binary_bgr),
+            "annotated": _encode_jpg(report.annotated),
+            "raw": _encode_jpg(image_bgr),
+            "binary": _encode_jpg(binary_bgr),
         },
     }
 
@@ -128,13 +126,23 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _send_html(self, html_bytes: bytes) -> None:
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(html_bytes)))
+        self.end_headers()
+        self.wfile.write(html_bytes)
+
     def do_OPTIONS(self):
         self._send_json(200, {"ok": True})
 
     def do_GET(self):
         try:
-            res = run_inspection({"mode": "synth", "seed": 3})
-            self._send_json(200, res)
+            if self.path.startswith("/api"):
+                res = run_inspection({"mode": "synth", "seed": 3})
+                self._send_json(200, res)
+            else:
+                self._send_html(_INDEX_HTML)
         except Exception as exc:
             self._send_json(500, {"error": str(exc)})
 

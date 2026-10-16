@@ -1,5 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/api/inspect", "destination": "/api/inspect.py" }
-  ]
-}
